@@ -5,4 +5,8 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ACME.Business.Logic\ACME.Business.Logic.csproj" />
+  </ItemGroup>
+
 </Project>

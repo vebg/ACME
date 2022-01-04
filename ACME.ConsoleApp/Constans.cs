@@ -2,7 +2,7 @@
 
 namespace ACME.ConsoleApp
 {
-    public class Class1
+    public class Constans
     {
     }
 }

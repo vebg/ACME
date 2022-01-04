@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Implementations\" />
+    <ProjectReference Include="..\ACME.Services\ACME.Services.csproj" />
   </ItemGroup>
 
 </Project>
