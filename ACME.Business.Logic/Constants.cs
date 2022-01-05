@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ACME.Business.Logic
 {
-    public class Constants
+    public static class Constants
     {
         public static class ErrorMessages
         {

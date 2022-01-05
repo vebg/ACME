@@ -28,16 +28,20 @@ namespace ACME.Business.Logic.Services.Implementations
         public async Task<List<Employee>> GetAllAsync(string path)
         {
             List<Employee> employees = new();
-            string values = await _iIOService.ReadFile(path);
+            string values = await _iIOService.ReadTextFile(path);
+            return TextToClass(employees, ref values);
+        }
 
-            values = Regex.Replace(values, @"\s+","");
+        private List<Employee> TextToClass(List<Employee> employees, ref string values)
+        {
+            values = Regex.Replace(values, @"\s+", "");
             string[] splitValues = Regex.Split(values, "([a-zA-Z]{3,}=)");
 
             for (int i = 0; i < splitValues.Length; i++)
             {
-                if(splitValues[i].Length > 0)
+                if (splitValues[i].Length > 0)
                 {
-                    if(splitValues[i].Contains(EQUAL_CHARACTER))
+                    if (splitValues[i].Contains(EQUAL_CHARACTER))
                     {
                         List<OfficesHours> officeTimes = new();
                         foreach (var item in splitValues[i + 1].Split(COMMA_CHARACTER))
@@ -47,22 +51,20 @@ namespace ACME.Business.Logic.Services.Implementations
                             int hourIn = int.Parse(item.Substring(2, 2));
                             int minuteIn = int.Parse(item.Substring(5, 2));
 
-
                             int hourOut = int.Parse(item.Substring(8, 2));
                             int minuteOut = int.Parse(item.Substring(11, 2));
 
                             officeTimes.Add(new OfficesHours
                             {
-                                 DayOfWeek = dayOfWeek,
-                                 InTime = new DateTime(CurrentYear, CurrentMonth,1, hourIn, minuteIn,0),
-                                 OutTime = new DateTime(CurrentYear, CurrentMonth,1, hourOut, minuteOut,0)
+                                DayOfWeek = dayOfWeek,
+                                InTime = new DateTime(CurrentYear, CurrentMonth, 1, hourIn, minuteIn, 0),
+                                OutTime = new DateTime(CurrentYear, CurrentMonth, 1, hourOut, minuteOut, 0)
                             });
                         }
 
-
                         employees.Add(new Employee
                         {
-                            Name = splitValues[i].Replace(EQUAL_CHARACTER,""),
+                            Name = splitValues[i].Replace(EQUAL_CHARACTER, ""),
                             OfficesHour = officeTimes
                         });
 
@@ -72,21 +74,24 @@ namespace ACME.Business.Logic.Services.Implementations
             }
 
             return employees;
-
-
         }
 
         public List<EmployeeTimeCoincidentResponse> GetEmployeesCoincidentOffice(List<Employee> employees)
         {
             List<EmployeeTimeCoincidentResponse> employeeTimeCoincidentResponse = new();
+            FindCoincidents(employees, employeeTimeCoincidentResponse);
+            return employeeTimeCoincidentResponse;
+        }
 
+        private static void FindCoincidents(List<Employee> employees, List<EmployeeTimeCoincidentResponse> employeeTimeCoincidentResponse)
+        {
             for (int i = 0; i < employees.Count; i++)
             {
                 for (int y = i + 1; y < employees.Count; y++)
                 {
                     var coincidents = employees[i].OfficesHour
                         .Where(x => employees[y].OfficesHour
-                            .Any(y => y.DayOfWeek == x.DayOfWeek && y.InTime >= x.InTime && y.OutTime <= x.OutTime))
+                            .Any(y => y.DayOfWeek == x.DayOfWeek && x.InTime >= y.InTime && x.OutTime <= y.OutTime))
                         .Count();
 
                     if (coincidents > 0)
@@ -99,8 +104,6 @@ namespace ACME.Business.Logic.Services.Implementations
                     }
                 }
             }
-
-            return employeeTimeCoincidentResponse;
         }
     }
 }

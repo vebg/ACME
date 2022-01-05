@@ -2,6 +2,7 @@
 using ACME.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
+using static ACME.ConsoleApp.Constans;
 
 namespace ACME.ConsoleApp
 {
@@ -9,18 +10,65 @@ namespace ACME.ConsoleApp
     {
         public async static Task Main(string[] args)
         {
-            //setup our DI
             IIOService iOService = new IOService();
             IEmployeeService employeeService = new EmployeeService(iOService);
-            var path = @"c:\Users\victor\source\repos\ACME\ACME.ConsoleApp\Inputs\01-03-2022-Week1.txt";
-            var data = await employeeService.GetAllAsync(path);
-            foreach (var item in employeeService.GetEmployeesCoincidentOffice(data))
+            bool start = true;
+            while (start)
             {
-                Console.WriteLine($"{item.Names}:{ item.Count}");
+                WelcomeMessages();
+                var fileName = Console.ReadLine();
+                Console.Clear();
+                start = await ProccessEmployeeFile(iOService, employeeService, start, fileName);
             }
-            Console.ReadLine();
+        }
 
-            //Console.WriteLine("Hello World!");
+        private static async Task<bool> ProccessEmployeeFile(IIOService iOService, IEmployeeService employeeService, bool start, string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                Console.WriteLine(ErrorMessages.FILE_NAME_BAD_FORMAT_TRY_AGAIN);
+                await Loading(10);
+            }
+            else
+            {
+                if (!iOService.ValidPath(fileName))
+                {
+                    Console.WriteLine(ErrorMessages.FILE_NOT_FOUND_TRY_AGAIN);
+                    await Loading();
+                }
+                else
+                {
+                    var data = await employeeService.GetAllAsync(iOService.GetFilePath(fileName));
+                    foreach (var item in employeeService.GetEmployeesCoincidentOffice(data))
+                    {
+                        Console.WriteLine($"{item.Names}:{ item.Count}");
+                    }
+                    start = false;
+                }
+            }
+
+            return start;
+        }
+
+        private static async Task Loading(int waiting = 5)
+        {
+            for (int i = 0; i < waiting; i++)
+            {
+                string loadingIndicator = "";
+                Console.Write(loadingIndicator += ".");
+                await Task.Delay(500);
+            }
+            Console.Clear();
+        }
+
+        private static void WelcomeMessages()
+        {
+            Console.WriteLine("********************");
+            Console.WriteLine("**** - ACME - ******");
+            Console.WriteLine("******System********");
+            Console.WriteLine("********************");
+            Console.WriteLine("\r");
+            Console.WriteLine("Insert the name of the file:");
         }
     }
 }

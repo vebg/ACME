@@ -1,4 +1,5 @@
 ﻿using ACME.Services.Interfaces;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -6,13 +7,22 @@ namespace ACME.Business.Logic.Services.Implementations
 {
     public class IOService : IIOService
     {
-        public async Task<string> ReadFile(string path)
+        public string GetFilePath(string fileName)
         {
-            if(File.Exists(path))
-            {
-                return await File.ReadAllTextAsync(path);
-            }
-            throw new FileNotFoundException(Constants.ErrorMessages.FILE_NOT_FOUND_TRY_AGAIN);
+            string workingDirectory = Environment.CurrentDirectory;
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+            string absolutePath = $"{projectDirectory}\\inputs\\{fileName}";
+            return absolutePath;
+        }
+
+        public async Task<string> ReadTextFile(string path)
+        {
+           return await File.ReadAllTextAsync(path);
+        }
+
+        public bool ValidPath(string fileName)
+        {
+            return File.Exists(GetFilePath(fileName));
         }
     }
 }
