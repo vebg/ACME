@@ -11,69 +11,19 @@ namespace ACME.Business.Logic.Services.Implementations
 {
     public class EmployeeService : IEmployeeService
     {
-        private const string EQUAL_CHARACTER = "=";
-        private const string COMMA_CHARACTER = ",";
-
-        private readonly int CurrentYear;
-        private readonly int CurrentMonth;
-
         private readonly IIOService _iIOService;
-        public EmployeeService(IIOService iOService)
+        private readonly ITextToClassService _textToClassService;
+
+        public EmployeeService(IIOService iOService, ITextToClassService textToClassService)
         {
             _iIOService = iOService;
-            CurrentYear = DateTime.Now.Year;
-            CurrentMonth = DateTime.Now.Month;
+            _textToClassService = textToClassService;
 
         }
         public async Task<List<Employee>> GetAllAsync(string path)
         {
-            List<Employee> employees = new();
             string values = await _iIOService.ReadTextFile(path);
-            return TextToClass(employees, ref values);
-        }
-
-        private List<Employee> TextToClass(List<Employee> employees, ref string values)
-        {
-            values = Regex.Replace(values, @"\s+", "");
-            string[] splitValues = Regex.Split(values, "([a-zA-Z]{3,}=)");
-
-            for (int i = 0; i < splitValues.Length; i++)
-            {
-                if (splitValues[i].Length > 0)
-                {
-                    if (splitValues[i].Contains(EQUAL_CHARACTER))
-                    {
-                        List<OfficesHours> officeTimes = new();
-                        foreach (var item in splitValues[i + 1].Split(COMMA_CHARACTER))
-                        {
-                            string dayOfWeek = item.Substring(0, 2);
-
-                            int hourIn = int.Parse(item.Substring(2, 2));
-                            int minuteIn = int.Parse(item.Substring(5, 2));
-
-                            int hourOut = int.Parse(item.Substring(8, 2));
-                            int minuteOut = int.Parse(item.Substring(11, 2));
-
-                            officeTimes.Add(new OfficesHours
-                            {
-                                DayOfWeek = dayOfWeek,
-                                InTime = new DateTime(CurrentYear, CurrentMonth, 1, hourIn, minuteIn, 0),
-                                OutTime = new DateTime(CurrentYear, CurrentMonth, 1, hourOut, minuteOut, 0)
-                            });
-                        }
-
-                        employees.Add(new Employee
-                        {
-                            Name = splitValues[i].Replace(EQUAL_CHARACTER, ""),
-                            OfficesHour = officeTimes
-                        });
-
-                        i++;
-                    }
-                }
-            }
-
-            return employees;
+            return _textToClassService.TextToEmployees(values);
         }
 
         public List<EmployeeTimeCoincidentResponse> GetEmployeesCoincidentOffice(List<Employee> employees)

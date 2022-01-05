@@ -11,7 +11,8 @@ namespace ACME.ConsoleApp
         public async static Task Main(string[] args)
         {
             IIOService iOService = new IOService();
-            IEmployeeService employeeService = new EmployeeService(iOService);
+            ITextToClassService textToClassService = new TextToClassService();
+            IEmployeeService employeeService = new EmployeeService(iOService, textToClassService);
             bool start = true;
             while (start)
             {
