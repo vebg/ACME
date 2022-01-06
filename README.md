@@ -42,8 +42,14 @@ When you see this in the console write the name of the file with the extension.
 ![image](https://user-images.githubusercontent.com/9616466/148326153-5b018174-3be8-4b38-b46a-f39c8182f793.png)
 Then 
 ![image](https://user-images.githubusercontent.com/9616466/148326929-cf09e0e3-42ee-4c83-aa33-0f4f647d03f7.png)
+
+
 Then you will be the results: 
+
+
 ![image](https://user-images.githubusercontent.com/9616466/148326974-c86f7ebe-84db-4374-a713-9abade952027.png)
+
+
 # if you need to add other test you only need to add a new file.txt on the inputs folder and the run the application. 
 
 
