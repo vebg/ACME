@@ -18,13 +18,13 @@ dotnet test
 
 
 
-# Target framework:
-.NET 5.0
-Console application
-Unit test with xUnit.
-Not library installed 
-Outpur .exe
-
+# Project technical details.
+- .NET 5.0.
+- Console application.
+- Unit test with xUnit.
+- Not library installed.
+- Outpur .exe.
+- Peudo DI
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
