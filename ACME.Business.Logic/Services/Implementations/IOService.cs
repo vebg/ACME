@@ -7,6 +7,8 @@ namespace ACME.Business.Logic.Services.Implementations
 {
     public class IOService : IIOService
     {
+        private readonly IIOService iOService;
+
         public string GetFilePath(string fileName)
         {
             string workingDirectory = Environment.CurrentDirectory;
